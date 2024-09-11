@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar } from "@mui/material";
 
-import ProfilePicture from "../../Shared/Avatar";
+import ProfilePicture from "../../Shared/NameAvatar";
 
 import "./Participants.css";
 const Participants = () => {

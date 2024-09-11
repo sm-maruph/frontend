@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, TextField, Grid, Button } from "@mui/material";
 
-import ProfilePicture from "../../Shared/Avatar";
+import ProfilePicture from "../../Shared/NameAvatar";
 import Participants from "../components/Participants";
 import Conversation from "../components/Conversation";
 import SendIcon from "@mui/icons-material/Send";

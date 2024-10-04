@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -10,17 +10,22 @@ import {
   Avatar,
   Button,
   LinearProgress,
+  Modal,
+  TextField,
 } from "@mui/material";
 import useFetch from "../../CustomHooks/useFetch";
 import { Link } from "react-router-dom"; // Import Link from React Router
+import ConnectButton from "./ConnectButton";
 
 function ProfileCards({ searchQuery, batch, department }) {
   const { data, isLoading, isError, error } = useFetch({
     url: "http://localhost:3000/alumni/getposts",
-    queryKey: ["alumniinfo",searchQuery, batch, department],
+    queryKey: ["alumniinfo", searchQuery, batch, department],
     params: {
-      searchQuery, batch, department
-    }
+      searchQuery,
+      batch,
+      department,
+    },
   });
 
   // Handle loading state
@@ -48,8 +53,6 @@ function ProfileCards({ searchQuery, batch, department }) {
     return <Typography>Error: {error.message}</Typography>;
   }
 
- 
-
   // Handle no results found
   if (data.length === 0) {
     return (
@@ -58,6 +61,9 @@ function ProfileCards({ searchQuery, batch, department }) {
       </Typography>
     );
   }
+
+ 
+
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -130,7 +136,11 @@ function ProfileCards({ searchQuery, batch, department }) {
                     <div>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "bold", marginBottom: 1, color: 'primary.main' }}
+                        sx={{
+                          fontWeight: "bold",
+                          marginBottom: 1,
+                          color: "primary.main",
+                        }}
                       >
                         {alumni.first_name} {alumni.last_name}
                       </Typography>
@@ -146,19 +156,14 @@ function ProfileCards({ searchQuery, batch, department }) {
                     </div>
                   </Link>
 
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: "auto" }}
-                  >
-                    Connect
-                  </Button>
+                  <ConnectButton alumniID ={alumni.id}/>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
       </Container>
+      {/* Modal for connection request */}
     </Box>
   );
 }

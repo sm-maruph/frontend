@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import {
   AppBar,
   Tabs,
@@ -10,11 +10,12 @@ import ProfileCards from "./ProfileCards";
 import MyList from "./MyList";
 import RequestedAlumni from "./RequestedAlumni";
 import MyRequest from "./MyRequest";
-
+import {AuthContext} from "../../Auth/AuthContext";
 // Main tabbed component
 const TabbedComponent = ({ searchQuery, batch, department }) => {
+  const auth = useContext(AuthContext);
   const [value, setValue] = useState(0);
-
+  console.log(auth);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -24,7 +25,9 @@ const TabbedComponent = ({ searchQuery, batch, department }) => {
       <Tabs value={value} onChange={handleChange}>
         <Tab label="All Profiles" />
         <Tab label="Connected Alumni" />
-        <Tab label="Pending Request" />
+
+        {auth.user_type !== 'student' && <Tab label="Pending Request" />}
+
         <Tab label="My Request" />
       </Tabs>
       <Box sx={{ p: 1 }}>

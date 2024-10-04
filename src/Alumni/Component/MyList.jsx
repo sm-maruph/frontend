@@ -7,54 +7,58 @@ import {
   CardContent,
   Avatar,
   IconButton,
+  LinearProgress,
   Grid,
+  Button,
 } from "@mui/material";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MessageIcon from "@mui/icons-material/Message";
-import customImage from "../Image/250929134_4408229885970439_9204173520367789220_n.jpg";
-
-const alumniData = [
-  {
-    id: 1,
-    name: "MD Nadib Ahsan",
-    company: "Google LLC",
-    batch: "2021",
-    profile_picture: customImage,
-  },
-  {
-    id: 2,
-    name: "S.M. Shahriar Rahman Maruph",
-    company: "Microsoft",
-    batch: "2020",
-    profile_picture: customImage,
-  },
-  {
-    id: 3,
-    name: "Mohiuddin Sadik",
-    company: "Adobe",
-    batch: "2019",
-    profile_picture: customImage,
-  },
-  // Add more demo data as needed
-];
+import useFetch from "../../CustomHooks/useFetch";
+import { Link } from "react-router-dom"; // Import Link from React Router
+import RevertRequest from "./RevertRequest";
 
 const MyList = () => {
-  const [selectedAlumni, setSelectedAlumni] = useState(null);
+  const { data, isLoading, isError, error } = useFetch({
+    url: "http://localhost:3000/alumni/getconnectedposts",
+    queryKey: ["alumniconectedpostinfo"],
+  });
 
-  const handleClick = (id) => {
-    setSelectedAlumni(id === selectedAlumni ? null : id); // Toggle selection
-  };
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          width: "60%",
+          margin: "4rem auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <LinearProgress sx={{ width: "100%" }} />
+        <Typography variant="h6" sx={{ marginTop: 2 }}>
+          Loading Connected Alumni Profiles...
+        </Typography>
+      </Box>
+    );
+  }
 
-  const handleViewProfile = (id) => {
-    console.log(`Viewing profile for alumni with ID: ${id}`);
-    // Add your logic to view the profile
-  };
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
 
-  const handleMessage = (id) => {
-    console.log(`Sending message to alumni with ID: ${id}`);
-    // Add your logic to send a message
-  };
+  // Handle no results found
+  if (data.length === 0) {
+    return (
+      <Typography variant="h6" sx={{ textAlign: "center", padding: 2 }}>
+        No alumni connected yet.
+      </Typography>
+    );
+  }
+
+ console.log(data);
 
   return (
     <Box
@@ -77,7 +81,7 @@ const MyList = () => {
         }}
       >
         <ConnectWithoutContactIcon sx={{ marginRight: 1 }} />
-        {alumniData.length} Connected
+        {data.length} Connected
       </Typography>
 
       <Container
@@ -89,7 +93,7 @@ const MyList = () => {
         borderRadius: "8px",
       }}>
         <Grid container spacing={2}>
-          {alumniData.map((alumni) => (
+          {data.map((alumni) => (
             <Grid item key={alumni.id} xs={12} sm={6} md={4}>
               <Card
                 sx={{
@@ -102,16 +106,20 @@ const MyList = () => {
                   },
                 }}
               >
-                <Avatar
-                  src={alumni.profile_picture}
-                  alt={alumni.name}
-                  sx={{
-                    margin: "16px auto",
-                    width: "100px",
-                    height: "100px",
-                  }}
-                />
-
+                <Link
+                  to={`/myprofile/${alumni.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Avatar
+                    src={`http://localhost:3000/${alumni.profile_picture}`}
+                    alt={alumni.first_name}
+                    sx={{
+                      margin: "16px auto",
+                      width: "100px",
+                      height: "100px",
+                    }}
+                  />
+                </Link>
                 <CardContent
                   sx={{
                     display: "flex",
@@ -121,35 +129,33 @@ const MyList = () => {
                     textAlign: "center",
                   }}
                 >
-                  <div>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "bold", marginBottom: 1 }}
-                    >
-                      {alumni.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {alumni.batch}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {alumni.company}
-                    </Typography>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-around" }}>
-                    <IconButton
-                      onClick={() => handleViewProfile(alumni.id)}
-                      aria-label="view profile"
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-
-                    <IconButton
-                      onClick={() => handleMessage(alumni.id)}
-                      aria-label="message"
-                    >
-                      <MessageIcon />
-                    </IconButton>
-                  </div>
+                  <Link
+                    to={`/myprofile/${alumni.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: "bold",
+                          marginBottom: 1,
+                          color: "primary.main",
+                        }}
+                      >
+                        {alumni.first_name} {alumni.last_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                      {alumni.batch || "Batch Not Updated"}                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                      {alumni.department_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                      {alumni.company || "Workplace unknown"}
+                      </Typography>
+                    </div>
+                  </Link>
+                       <RevertRequest id = {alumni.id} />
+                  <Button variant="contained"><MessageIcon/> </Button>
                 </CardContent>
               </Card>
             </Grid>

@@ -7,55 +7,58 @@ import {
   CardContent,
   Avatar,
   IconButton,
+  LinearProgress,
   Grid,
   Button,
 } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Importing Accept icon
-import CancelIcon from "@mui/icons-material/Cancel"; // Importing Decline icon
 import EmailIcon from "@mui/icons-material/Email";
-import customImage from "../Image/250929134_4408229885970439_9204173520367789220_n.jpg";
 import PendingActionsIcon from "@mui/icons-material/PendingActions"; // Importing PendingActions icon
-
-const requestedAlumniData = [
-  {
-    id: 1,
-    name: "MD Nadib Ahsan",
-    company: "Google LLC",
-    batch: "2021",
-    profile_picture: customImage,
-  },
-  {
-    id: 2,
-    name: "S.M. Shahriar Rahman Maruph",
-    company: "Microsoft",
-    batch: "2020",
-    profile_picture: customImage,
-  },
-  {
-    id: 3,
-    name: "Mohiuddin Sadik",
-    company: "Adobe",
-    batch: "2019",
-    profile_picture: customImage,
-  },
-  // Add more demo data as needed
-];
+import useFetch from "../../CustomHooks/useFetch";
+import { Link } from "react-router-dom"; // Import Link from React Router
+import RequestAcceptButton from "./RequestAcceptButton";
+import RevertRequest from "./RevertRequest";
 
 const RequestedAlumni = () => {
-  const handleAcceptRequest = (id) => {
-    console.log(`Accepted request for alumni with ID: ${id}`);
-    // Add your logic to accept the request
-  };
+  const { data, isLoading, isError, error } = useFetch({
+    url: "http://localhost:3000/alumni/getconnectingposts",
+    queryKey: ["alumniconnectingrequestpostinfo"],
+  });
 
-  const handleDeclineRequest = (id) => {
-    console.log(`Declined request for alumni with ID: ${id}`);
-    // Add your logic to decline the request
-  };
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          width: "60%",
+          margin: "4rem auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <LinearProgress sx={{ width: "100%" }} />
+        <Typography variant="h6" sx={{ marginTop: 2 }}>
+          Loading My Connecting Requests...
+        </Typography>
+      </Box>
+    );
+  }
 
-  const handleEmail = (id) => {
-    console.log(`Emailing alumni with ID: ${id}`);
-    // Add your logic to send an email
-  };
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
+
+  // Handle no results found
+  if (data.length === 0) {
+    return (
+      <Typography variant="h6" sx={{ textAlign: "center", padding: 2 }}>
+        No alumni found matching your criteria.
+      </Typography>
+    );
+  }
+
+  console.log(data);
 
   return (
     <Box
@@ -78,7 +81,7 @@ const RequestedAlumni = () => {
         }}
       >
         <PendingActionsIcon sx={{ marginRight: 1 }} />
-        {requestedAlumniData.length} Pending
+        {data.length} Pending
       </Typography>
 
       <Container
@@ -91,7 +94,7 @@ const RequestedAlumni = () => {
         }}
       >
         <Grid container spacing={2}>
-          {requestedAlumniData.map((alumni) => (
+          {data.map((alumni) => (
             <Grid item key={alumni.id} xs={12} sm={6} md={4}>
               <Card
                 sx={{
@@ -104,16 +107,20 @@ const RequestedAlumni = () => {
                   },
                 }}
               >
-                <Avatar
-                  src={alumni.profile_picture}
-                  alt={alumni.name}
-                  sx={{
-                    margin: "16px auto",
-                    width: "100px",
-                    height: "100px",
-                  }}
-                />
-
+                <Link
+                  to={`/myprofile/${alumni.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Avatar
+                    src={`http://localhost:3000/${alumni.profile_picture}`}
+                    alt={alumni.first_name}
+                    sx={{
+                      margin: "16px auto",
+                      width: "100px",
+                      height: "100px",
+                    }}
+                  />
+                </Link>
                 <CardContent
                   sx={{
                     display: "flex",
@@ -123,43 +130,48 @@ const RequestedAlumni = () => {
                     textAlign: "center",
                   }}
                 >
-                  <div>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "bold", marginBottom: 1 }}
-                    >
-                      {alumni.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {alumni.batch}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {alumni.company}
-                    </Typography>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-around" }}>
+                  <Link
+                    to={`/myprofile/${alumni.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: "bold",
+                          marginBottom: 1,
+                          color: "primary.main",
+                        }}
+                      >
+                        {alumni.first_name} {alumni.last_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {alumni.batch || "Batch Not Updated"}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {alumni.department_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {alumni.company || "Workplace unknown"}
+                      </Typography>
+                    </div>
+                  </Link>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-around" }}
+                  >
                     <IconButton
                       onClick={() => handleEmail(alumni.id)}
                       aria-label="email"
+                      color="primary"
                     >
                       <EmailIcon />
                     </IconButton>
-                    <Button
-                      variant="outlined"
-                      color="success"
-                      startIcon={<CheckCircleIcon />}
-                      onClick={() => handleAcceptRequest(alumni.id)}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      startIcon={<CancelIcon />}
-                      onClick={() => handleDeclineRequest(alumni.id)}
-                    >
-                      Decline
-                    </Button>
+
+                    <IconButton aria-label="accept" color="success">
+                      <RequestAcceptButton id={alumni.id} />
+                    </IconButton>
+                    <RevertRequest id ={alumni.id} />
+                    
                   </div>
                 </CardContent>
               </Card>

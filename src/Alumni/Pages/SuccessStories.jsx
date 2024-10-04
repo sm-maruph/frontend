@@ -1,9 +1,9 @@
 // SuccessStories.js
 import React, { useState } from "react";
 import { Box, Typography, IconButton, Grid ,LinearProgress}  from "@mui/material";
-import AddIcon from "@mui/icons-material/Add"; // Import the MUI icon
 import StoryCard from "../Component/Storycards";
 import useFetch from "../../CustomHooks/useFetch"; 
+import AddStoryButton from "../Component/AddStoryButton";
 
 const SuccessStories = () => {
   const { data, isLoading, isError, error } = useFetch({
@@ -24,7 +24,7 @@ const SuccessStories = () => {
     }}>
         <LinearProgress sx={{ width: '100%' }} />  
         <Typography variant="h6" sx={{ marginTop: 2 }}>
-            Loading stories...
+            Loading Success Stories...
         </Typography>
     </Box>
     
@@ -54,26 +54,7 @@ const SuccessStories = () => {
       <Typography variant="h4" sx={{ mb: 2, textAlign: "center" }}>
         Success Stories of Our Alumni
       </Typography>
-      <IconButton
-        onClick={handleCreateStory}
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 150,
-          zIndex: 10,
-          backgroundColor: "primary.main", 
-          color: "white !important", 
-          "&:hover": {
-            transform: "scale(1.2)", 
-            transition: "transform 0.2s ease",
-            color: "white !important", 
-            backgroundColor: "primary.main", 
-        },
-          p: 2, 
-        }}
-      >
-        <AddIcon fontSize="large" />
-      </IconButton>
+      <AddStoryButton />
 
       <Grid container spacing={2} sx={{ mt: 0 }}>
         {data.map((story) => (

@@ -44,8 +44,6 @@ const SocialMedia = () => {
     queryKey: ["getsocial"],
     params: { userId },
   });
-  console.log(data);
-  console.log(error);
 
   const [socialMedias, setSocialMedias] = useState([
     { type: "Facebook", url: "facebook.com/example" },
@@ -70,7 +68,7 @@ const SocialMedia = () => {
     setNewMediaType("");
     setNewMediaUrl("");
   };
-  console.log(mutation.error);
+
   const mutationDelete = useFetch({
     url: "http://localhost:3000/myprofile/deletesocial",
     method: "DELETE",
@@ -106,7 +104,6 @@ const SocialMedia = () => {
   }
 
   const deleteSocialMedia = (index) => {
-    console.log(index);
     mutationDelete.mutate(
       {
         params: {
@@ -125,7 +122,7 @@ const SocialMedia = () => {
       }
     );
   };
-  console.log(mutationDelete.error);
+
   return (
     <>
       <Popup

@@ -8,7 +8,6 @@ const postQuestions = async (
   examType,
   pdf
 ) => {
-  console.log(pdf);
   const form = new FormData();
   form.append("courseName", courseName);
   form.append("courseCode", courseCode);
@@ -17,19 +16,22 @@ const postQuestions = async (
   form.append("trimester", trimester);
   form.append("examType", examType);
   form.append("pdf", pdf[0]);
-
   const token = JSON.parse(localStorage.getItem("token"));
-  const response = await axios.post(
-    `http://localhost:3000/questions/postquestion/`,
-    form,
-    {
-      headers: {
-        Authorization: "Baerer " + token,
-      },
-    }
-  );
+  try {
+    const response = await axios.post(
+      `http://localhost:3000/questions/postquestion/`,
+      form,
+      {
+        headers: {
+          Authorization: "Baerer " + token,
+        },
+      }
+    );
 
-  return response;
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const updateQuestions = async (

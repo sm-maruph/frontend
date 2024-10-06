@@ -150,7 +150,7 @@ const Skills = () => {
       <Grid item xs={12}>
         <Box marginTop={3} width="100%">
           <List>
-            {data.map((skill, index) => (
+            {data?.map((skill, index) => (
               <ListItem key={index} disableGutters>
                 <ListItemIcon>
                   <CheckCircleIcon sx={{ color: "secondary.main" }} />

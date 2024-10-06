@@ -50,7 +50,7 @@ const Guest = (props) => {
             textAlign="center"
             sx={{ color: "black" }}
           >
-            About Us
+            About
           </Typography>
         </NavLink>
       </MenuItem>
@@ -128,7 +128,7 @@ const Student = (props) => {
       </MenuItem>
       <MenuItem onClick={handleCloseNavMenu}>
         <NavLink
-          to="/about"
+          to="/tolet"
           className={({ isActive }) =>
             `nav-link ${isActive ? "active-link" : ""}`
           }
@@ -138,7 +138,7 @@ const Student = (props) => {
             textAlign="center"
             sx={{ color: "black" }}
           >
-            About Us
+            TO-LET
           </Typography>
         </NavLink>
       </MenuItem>
@@ -248,7 +248,7 @@ const Alumni = (props) => {
       </MenuItem>
       <MenuItem onClick={handleCloseNavMenu}>
         <NavLink
-          to="/about"
+          to="/tolet"
           className={({ isActive }) =>
             `nav-link ${isActive ? "active-link" : ""}`
           }
@@ -258,7 +258,7 @@ const Alumni = (props) => {
             textAlign="center"
             sx={{ color: "black" }}
           >
-            About Us
+            TO-LET
           </Typography>
         </NavLink>
       </MenuItem>

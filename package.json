@@ -18,11 +18,14 @@
     "@tanstack/react-query": "^5.52.3",
     "@tanstack/react-query-devtools": "^5.53.1",
     "axios": "^1.7.4",
+    "moment": "^2.30.1",
     "openai": "^4.58.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0",
+    "react-slick": "^0.30.2",
     "react-transition-group": "^4.4.5",
+    "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.7.5"
   },
   "devDependencies": {

@@ -46,7 +46,6 @@ const PersonalInformation = () => {
     queryKey: ["gud"],
     params: { userId },
   });
-  console.log(data);
 
   const { state, handleChange } = useInput({});
 

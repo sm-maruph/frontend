@@ -15,59 +15,29 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
+import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School"; // Icon for degree entries
 import GroupIcon from "@mui/icons-material/Group"; // Icon for club entries
 import DeleteIcon from "@mui/icons-material/Delete"; // Delete icon
+import useFetch from "../../CustomHooks/useFetch";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
 // Sample data for degrees and club memberships
-const initialDegreeData = [
-  {
-    degree_id: 1,
-    uid: 101,
-    degree_name: "Bachelor of Science in Computer Science",
-    institution: "United International University",
-    start: "2019",
-    end: "2023",
-  },
-  {
-    degree_id: 2,
-    uid: 102,
-    degree_name: "Bachelor of Arts in Design",
-    institution: "Design Academy",
-    start: "2018",
-    end: "2022",
-  },
-];
-
-const initialClubData = [
-  {
-    club_id: 1,
-    uid: 101,
-    club_name: "Tech Club",
-    position: "Member",
-    start_date: "January 2020",
-    end_date: "Present",
-  },
-  {
-    club_id: 2,
-    uid: 102,
-    club_name: "Art Society",
-    position: "Vice President",
-    start_date: "June 2021",
-    end_date: "June 2023",
-  },
-];
 
 const EducationAndClubs = () => {
-  const [degreeData, setDegreeData] = useState(initialDegreeData);
-  const [clubData, setClubData] = useState(initialClubData);
+  const userId = useParams().userId;
+  const [openSuccessPopup, setOpenSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const queryClient = useQueryClient();
 
   // Modal state for degrees
   const [openDegreeModal, setOpenDegreeModal] = useState(false);
   const [newDegree, setNewDegree] = useState({
     degree_name: "",
     institution: "",
-    start: "",
+    type: "",
     end: "",
   });
 
@@ -76,8 +46,6 @@ const EducationAndClubs = () => {
   const [newClub, setNewClub] = useState({
     club_name: "",
     position: "",
-    start_date: "",
-    end_date: "",
   });
 
   // Functions to open and close the degree modal
@@ -85,39 +53,155 @@ const EducationAndClubs = () => {
   const handleCloseDegreeModal = () => setOpenDegreeModal(false);
 
   // Function to add a new degree
-  const addDegree = () => {
-    setDegreeData([
-      ...degreeData,
-      { ...newDegree, degree_id: degreeData.length + 1, uid: 101 }, // Update uid as needed
-    ]);
-    setNewDegree({ degree_name: "", institution: "", start: "", end: "" });
-    handleCloseDegreeModal();
-  };
 
   // Functions to open and close the club modal
   const handleOpenClubModal = () => setOpenClubModal(true);
   const handleCloseClubModal = () => setOpenClubModal(false);
 
   // Function to add a new club
-  const addClub = () => {
-    setClubData([
-      ...clubData,
-      { ...newClub, club_id: clubData.length + 1, uid: 101 }, // Update uid as needed
-    ]);
-    setNewClub({ club_name: "", position: "", start_date: "", end_date: "" });
-    handleCloseClubModal();
-  };
 
   // Function to delete a degree
-  const deleteDegree = (degree_id) => {
-    setDegreeData(
-      degreeData.filter((degree) => degree.degree_id !== degree_id)
+
+  // Function to delete a club
+
+  //degree section
+  const {
+    data: degree,
+    isError: degreeIsError,
+    error: degreeError,
+    isLoading: degreeIsLoading,
+  } = useFetch({
+    url: "http://localhost:3000/myprofile/userdegree",
+    queryKey: ["getdegree"],
+    params: { userId },
+  });
+  const degreeAddMutation = useFetch({
+    url: "http://localhost:3000/myprofile/adddegree",
+    method: "POST",
+  });
+  const addDegree = () => {
+    degreeAddMutation.mutate(
+      {
+        params: {
+          userId,
+          degree_name: newDegree.degree_name,
+          Institution: newDegree.institution,
+          EndDate: newDegree.end,
+          DegreeType: newDegree.type,
+        },
+      },
+      {
+        onSuccess: async (data) => {
+          await queryClient.invalidateQueries(["getdegree"]);
+          queryClient.refetchQueries(["getdegree"]);
+          setSuccessMessage(data.message);
+          setOpenSuccessPopup(true);
+        },
+        onError: (data) => {
+          console.log(data);
+        },
+      }
+    );
+    // Reset form
+    setNewDegree({
+      degree_name: "",
+      institution: "",
+      end: "",
+      type: "",
+    });
+    handleCloseDegreeModal();
+  };
+
+  const deleteDegreeMutation = useFetch({
+    url: "http://localhost:3000/myprofile/deletedegree",
+    method: "DELETE",
+  });
+
+  const deleteDegree = (id) => {
+    deleteDegreeMutation.mutate(
+      {
+        params: {
+          id,
+        },
+      },
+      {
+        onSuccess: async (data) => {
+          await queryClient.invalidateQueries(["getdegree"]);
+          queryClient.refetchQueries(["getdegree"]);
+          setSuccessMessage(data.message);
+          setOpenSuccessPopup(true);
+        },
+        onError: (data) => {
+          console.log(data);
+        },
+      }
     );
   };
 
-  // Function to delete a club
-  const deleteClub = (club_id) => {
-    setClubData(clubData.filter((club) => club.club_id !== club_id));
+  // club sections
+  const {
+    data: club,
+    isError: clubIsError,
+    error: clubError,
+    isLoading: clubIsLoading,
+  } = useFetch({
+    url: "http://localhost:3000/myprofile/getclub",
+    queryKey: ["getclub"],
+    params: { userId },
+  });
+
+  const clubAddMutation = useFetch({
+    url: "http://localhost:3000/myprofile/addclub",
+    method: "POST",
+  });
+
+  const addClub = () => {
+    clubAddMutation.mutate(
+      {
+        params: {
+          uid: userId,
+          club_id: newClub.club_name,
+          position_id: newClub.position,
+        },
+      },
+      {
+        onSuccess: async (data) => {
+          await queryClient.invalidateQueries(["getclub"]);
+          queryClient.refetchQueries(["getclub"]);
+          setSuccessMessage(data.message);
+          setOpenSuccessPopup(true);
+        },
+        onError: (data) => {
+          console.log(data);
+        },
+      }
+    );
+    setNewClub({ club_name: "", position: "" });
+    handleCloseClubModal();
+  };
+  const clubDeleteMutation = useFetch({
+    url: "http://localhost:3000/myprofile/deleteclub",
+    method: "DELETE",
+  });
+  const deleteClub = (id) => {
+    clubDeleteMutation.mutate(
+      {
+        params: {
+          id,
+        },
+      },
+      {
+        onSuccess: async (data) => {
+          await queryClient.invalidateQueries(["getclub"]);
+          queryClient.refetchQueries(["getclub"]);
+          setSuccessMessage(data.message);
+          setOpenSuccessPopup(true);
+        },
+        onError: (data) => {
+          console.log(data);
+        },
+      }
+    );
   };
 
   return (
@@ -134,7 +218,7 @@ const EducationAndClubs = () => {
         Add Degree
       </Button>
       <List>
-        {degreeData.map((degree) => (
+        {degree?.map((degree) => (
           <ListItem key={degree.degree_id} sx={{ mb: 2 }}>
             <ListItemIcon>
               <SchoolIcon color="primary" />
@@ -145,7 +229,7 @@ const EducationAndClubs = () => {
               }
               secondary={
                 <Typography variant="body2" color="text.secondary">
-                  {degree.institution} | {degree.start} - {degree.end}
+                  {degree.Institution} | {degree.EndDate}
                 </Typography>
               }
             />
@@ -168,8 +252,8 @@ const EducationAndClubs = () => {
         Add Club
       </Button>
       <List>
-        {clubData.map((club) => (
-          <ListItem key={club.club_id} sx={{ mb: 2 }}>
+        {club?.map((club) => (
+          <ListItem key={club.id} sx={{ mb: 2 }}>
             <ListItemIcon>
               <GroupIcon color="primary" />
             </ListItemIcon>
@@ -177,14 +261,11 @@ const EducationAndClubs = () => {
               primary={<Typography variant="h6">{club.club_name}</Typography>}
               secondary={
                 <Typography variant="body2" color="text.secondary">
-                  {club.position} | {club.start_date} - {club.end_date}
+                  {club.position_name}
                 </Typography>
               }
             />
-            <IconButton
-              onClick={() => deleteClub(club.club_id)}
-              color="secondary"
-            >
+            <IconButton onClick={() => deleteClub(club.id)} color="secondary">
               <DeleteIcon />
             </IconButton>
           </ListItem>
@@ -216,19 +297,25 @@ const EducationAndClubs = () => {
               setNewDegree({ ...newDegree, institution: e.target.value })
             }
           />
+          <FormControl fullWidth margin="dense" variant="outlined">
+            <InputLabel>Type of your Degree</InputLabel>
+            <Select
+              label="Type of your Degree"
+              value={newDegree.type}
+              onChange={(e) =>
+                setNewDegree({ ...newDegree, type: e.target.value })
+              }
+            >
+              <MenuItem value="underGraduate">Undergraduate</MenuItem>
+              <MenuItem value="postGraduate">Postgraduate</MenuItem>
+              <MenuItem value="graduate">Graduate</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
-            label="Start Year"
-            fullWidth
-            variant="outlined"
-            value={newDegree.start}
-            onChange={(e) =>
-              setNewDegree({ ...newDegree, start: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
+            focused
             label="End Year"
+            type="date"
             fullWidth
             variant="outlined"
             value={newDegree.end}
@@ -251,47 +338,43 @@ const EducationAndClubs = () => {
       <Dialog open={openClubModal} onClose={handleCloseClubModal}>
         <DialogTitle>Add Club</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Club Name"
-            fullWidth
-            variant="outlined"
-            value={newClub.club_name}
-            onChange={(e) =>
-              setNewClub({ ...newClub, club_name: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="Position"
-            fullWidth
-            variant="outlined"
-            value={newClub.position}
-            onChange={(e) =>
-              setNewClub({ ...newClub, position: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="Start Date"
-            fullWidth
-            variant="outlined"
-            value={newClub.start_date}
-            onChange={(e) =>
-              setNewClub({ ...newClub, start_date: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="End Date"
-            fullWidth
-            variant="outlined"
-            value={newClub.end_date}
-            onChange={(e) =>
-              setNewClub({ ...newClub, end_date: e.target.value })
-            }
-          />
+          <FormControl fullWidth margin="dense" variant="outlined">
+            <InputLabel>Club Name</InputLabel>
+            <Select
+              label="Club Name"
+              value={newClub.club_name}
+              onChange={(e) =>
+                setNewClub({ ...newClub, club_name: e.target.value })
+              }
+            >
+              <MenuItem value="1">UIU Computer Club</MenuItem>
+              <MenuItem value="2">Debate Club</MenuItem>
+              <MenuItem value="3">Cultural Club</MenuItem>
+              <MenuItem value="4">Sports Club</MenuItem>
+              <MenuItem value="5">Business Club</MenuItem>
+              <MenuItem value="6">Photography Club</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="dense" variant="outlined">
+            <InputLabel>Position</InputLabel>
+            <Select
+              label="Position"
+              value={newClub.position}
+              onChange={(e) =>
+                setNewClub({ ...newClub, position: e.target.value })
+              }
+            >
+              <MenuItem value="1">President</MenuItem>
+              <MenuItem value="2">Secretary</MenuItem>
+              <MenuItem value="3">Treasurer</MenuItem>
+              <MenuItem value="4">Vice President</MenuItem>
+              <MenuItem value="5">Event Coordinator</MenuItem>
+              <MenuItem value="6">Public Relations Officer</MenuItem>
+              <MenuItem value="7">Technical Lead</MenuItem>
+              <MenuItem value="8">Membership Coordinator</MenuItem>
+              <MenuItem value="9">General Member</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseClubModal} color="primary">

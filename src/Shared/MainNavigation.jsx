@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
+import SpaIcon from "@mui/icons-material/Spa";
 const StudentMainNav = () => {
   return (
     <>
@@ -56,13 +57,13 @@ const StudentMainNav = () => {
       </NavLink>
 
       <NavLink
-        to="/about"
+        to="/tolet"
         className={({ isActive }) =>
           `nav-link ${isActive ? "active-link" : ""}`
         }
       >
         <Typography variant="button" className="link" sx={{ mx: 2, my: 2 }}>
-          About Us
+          TO-LET
         </Typography>
       </NavLink>
     </>
@@ -132,14 +133,15 @@ const AlumniMainNav = () => {
           Alumni
         </Typography>
       </NavLink>
+
       <NavLink
-        to="/about"
+        to="/tolet"
         className={({ isActive }) =>
           `nav-link ${isActive ? "active-link" : ""}`
         }
       >
         <Typography variant="button" className="link" sx={{ mx: 2, my: 2 }}>
-          About Us
+          TO-LET
         </Typography>
       </NavLink>
     </>

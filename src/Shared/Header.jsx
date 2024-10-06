@@ -103,11 +103,6 @@ function Header() {
                 <MessageIcon color="primary" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Notifications">
-              <IconButton component={Link} to="/notification">
-                <NotificationsIcon color="primary" />
-              </IconButton>
-            </Tooltip>
           </div>
         )}
         <Typography sx={sx}>{auth.name}</Typography>
@@ -143,11 +138,19 @@ function Header() {
                 sx={{ textDecoration: "none", color: "inherit" }}
                 to={`./myprofile/${auth.id}`}
               >
-                My Account
+                My Profile
               </Typography>
             </MenuItem>
-            <MenuItem key="3" onClick={handleCloseUserMenu}>
-              <Typography textAlign="center">Help & Support</Typography>
+
+            <MenuItem key="4" onClick={handleCloseUserMenu}>
+              <Typography
+                textAlign="center"
+                component={Link}
+                sx={{ textDecoration: "none", color: "inherit" }}
+                to={`./account/${auth.id}`}
+              >
+                Accounts
+              </Typography>
             </MenuItem>
           </>
         )}

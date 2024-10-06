@@ -2,7 +2,9 @@ import React from "react";
 import {
   Grid,
   Box,
-  Avatar,
+  Card,
+  CardContent,
+  CardMedia,
   Typography,
   IconButton,
   Button,
@@ -10,25 +12,49 @@ import {
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import { Link } from "react-router-dom";
 
-const Product = ({item}) => {
- const image_url= JSON.parse(item.image_url);
+const Product = ({ item }) => {
+  console.log(item);
+
+  // Fallback image if the image_url array is empty or not valid
+  const defaultImage =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/800px-No_image_available.svg.png"; // Placeholder image URL
+  const productImage =
+    item.image_url.length > 0 ? item.image_url[0] : defaultImage;
+
   return (
-    <Grid item xs={4}>
-      <Box backgroundColor="#F0F0F0" borderRadius={1}>
-        <Avatar
-          variant="rounded"
-          src={item.image_url}
-          sx={{ height: 200, width: "100%" }}
+    <Grid item xs={12} sm={6} md={4}>
+      <Card
+        sx={{
+          borderRadius: 2,
+          boxShadow: 2,
+          transition: "0.3s",
+          "&:hover": { boxShadow: 6 },
+        }}
+      >
+        <CardMedia
+          component="img"
+          alt={item.title}
+          src={
+            item.image_url.length > 0
+              ? "http://localhost:3000/" + productImage
+              : defaultImage
+          }
+          sx={{
+            height: 200,
+            objectFit: "cover",
+            borderTopLeftRadius: 2,
+            borderTopRightRadius: 2,
+          }}
         />
-        <Box padding={2}>
-          <Typography variant="h6" color="secondary">
+        <CardContent>
+          <Typography variant="h6" color="secondary" gutterBottom>
             {item.title}
           </Typography>
-          <Typography variant="h5" fontWeight={700}>
+          <Typography variant="h5" fontWeight={700} color="primary">
             Tk {item.price}
           </Typography>
           <Typography
-            variant="body1"
+            variant="body2"
             sx={{
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
@@ -40,25 +66,28 @@ const Product = ({item}) => {
           >
             {item.description}
           </Typography>
-          <Typography variant="body1" fontWeight={700} color="initial">
+          <Typography variant="body2" fontWeight={700} color="initial">
             Status : {item.status}
           </Typography>
-        </Box>
-        <Box display="flex" padding={2}>
-          <IconButton>
+        </CardContent>
+        <Box display="flex" padding={2} justifyContent="space-between">
+          <IconButton sx={{ color: "primary.main" }}>
             <BookmarkAddIcon />
           </IconButton>
           <Button
-            sx={{ marginLeft: "auto" }}
+            variant="contained"
+            color="primary"
             component={Link}
             to={`/market/individualproduct/${item.id}`}
-            state= { {item} }  
-            variant="contained"
+            sx={{
+              borderRadius: 1,
+              "&:hover": { backgroundColor: "primary.dark" },
+            }}
           >
             View
           </Button>
         </Box>
-      </Box>
+      </Card>
     </Grid>
   );
 };

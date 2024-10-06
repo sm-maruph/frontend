@@ -50,6 +50,7 @@ const UserInfo = () => {
   if (mutation.isError) {
     console.log(mutation.error);
   }
+
   const deleteCV = () => {
     mutationDeleteCV.mutate(undefined, {
       onSuccess: async (data) => {

@@ -54,8 +54,8 @@ const AddPdf = () => {
       );
     },
     onSuccess: async () => {
-      await QueryClient.invalidateQueries(["getquestions"]);
-      QueryClient.refetchQueries(["getquestions"]);
+      await QueryClient.invalidateQueries(["getquestions1"]);
+      QueryClient.refetchQueries(["getquestions1"]);
     },
   });
 

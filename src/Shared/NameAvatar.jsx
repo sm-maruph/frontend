@@ -13,7 +13,7 @@ const NameAvatar = ({ name, src, subtitle }) => {
           {name ? name : "Shahriar Rahman Shound"}
         </Typography>
         <Typography variant="body2" color="secondary">
-          {subtitle ? subtitle : "All time active User"}
+          {subtitle ? subtitle : ""}
         </Typography>
       </Box>
     </Box>

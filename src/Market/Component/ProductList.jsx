@@ -12,19 +12,13 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 import Product from "./Product";
-import getPosts from "../Functions/getPost";
 
-const ProductList = () => {
-  const { data, isLoading, error, isError } = useQuery({
-    queryKey: ["getPosts"],
-    queryFn: getPosts,
-  });
-
+const ProductList = ({ items }) => {
   return (
     <Box marginTop={2} borderRadius={1} padding={3} border="1px solid #D3D3D3">
       <Box display="flex" alignItems="center">
         <Typography variant="body1">
-          <span style={{ fontSize: 30 }}>220</span> Results Found
+          <span style={{ fontSize: 30 }}>{items?.length}</span> Results Found
         </Typography>
         <FormControl
           sx={{ m: 1, minWidth: 120, marginLeft: "auto" }}
@@ -45,8 +39,8 @@ const ProductList = () => {
         </FormControl>
       </Box>
       <Grid container marginTop={2} spacing={2}>
-        {data?.map((item) => {
-          return <Product item={item}/>;
+        {items?.map((item) => {
+          return <Product item={item} />;
         })}
       </Grid>
     </Box>

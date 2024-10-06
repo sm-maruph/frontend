@@ -7,7 +7,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import deleteQuestions from "../Functions/deleteQuestion";
 import { AuthContext } from "../../Auth/AuthContext";
+
 import UpdatePdf from "./UpdatePdf";
+import { Link } from "react-router-dom";
 
 const Options = ({
   id,
@@ -28,8 +30,8 @@ const Options = ({
       deleteQuestions(id, pdfPath);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["getquestions"]);
-      queryClient.refetchQueries(["getquestions"]);
+      await queryClient.invalidateQueries(["getquestions1"]);
+      queryClient.refetchQueries(["getquestions1"]);
     },
   });
   const handleDelete = () => {
@@ -71,6 +73,8 @@ const Options = ({
         )}
 
         <Avatar
+          component={Link}
+          to={`/myprofile/${userId}`}
           sx={{ marginLeft: "auto" }}
           src={`http://localhost:3000/${profile}`}
         />

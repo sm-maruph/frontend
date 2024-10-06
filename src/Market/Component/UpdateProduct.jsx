@@ -1,14 +1,66 @@
-import { width } from "@mui/system";
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { Modal, Box, TextField, Button, Grid, Typography } from "@mui/material";
+import useFetch from "../../CustomHooks/useFetch";
+import { useQueryClient } from "@tanstack/react-query";
 
-const UpdateProduct = ({ open, handleClose }) => {
+const UpdateProduct = ({ open, handleClose, id }) => {
+  console.log(id);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    phone: "",
+    price: "",
+    condition: "",
+    address: "",
+  });
+  const queryClient = useQueryClient();
+  // State to hold input values
+
+  const mutation = useFetch({
+    url: "http://localhost:3000/marketplace/updateproduct",
+    method: "PUT",
+    data: {
+      title: formData.title,
+      description: formData.description,
+      phone: formData.phone,
+      price: formData.price,
+      condition: formData.condition,
+      address: formData.address,
+    },
+    params: {
+      id,
+    },
+  });
+  console.log(mutation.error);
+
+  // Handle change for input fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    console.log(formData);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate(undefined, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(["individualproduct"]);
+        queryClient.refetchQueries(["individualproduct"]);
+      },
+    });
+    handleClose(); // Close the modal after submission
+  };
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
+        component="form"
+        onSubmit={handleSubmit}
         sx={{
           position: "absolute",
-
           width: "700px",
           backgroundColor: "white.main",
           top: "50%",
@@ -34,6 +86,8 @@ const UpdateProduct = ({ open, handleClose }) => {
           name="title"
           variant="outlined"
           fullWidth
+          value={formData.title} // Bind state to the input
+          onChange={handleChange} // Handle input change
         />
         <TextField
           name="description"
@@ -43,6 +97,17 @@ const UpdateProduct = ({ open, handleClose }) => {
           minRows={3}
           fullWidth
           sx={{ marginBottom: 2 }}
+          value={formData.description} // Bind state to the input
+          onChange={handleChange} // Handle input change
+        />
+        <TextField
+          name="phone"
+          label="Phone"
+          variant="outlined"
+          fullWidth
+          sx={{ marginBottom: 2 }}
+          value={formData.phone} // Bind state to the input
+          onChange={handleChange} // Handle input change
         />
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -53,6 +118,8 @@ const UpdateProduct = ({ open, handleClose }) => {
               type="number"
               fullWidth
               sx={{ marginBottom: 2 }}
+              value={formData.price} // Bind state to the input
+              onChange={handleChange} // Handle input change
             />
           </Grid>
           <Grid xs={6} item>
@@ -62,6 +129,8 @@ const UpdateProduct = ({ open, handleClose }) => {
               variant="outlined"
               fullWidth
               sx={{ marginBottom: 2 }}
+              value={formData.condition} // Bind state to the input
+              onChange={handleChange} // Handle input change
             />
           </Grid>
         </Grid>
@@ -72,6 +141,8 @@ const UpdateProduct = ({ open, handleClose }) => {
           variant="outlined"
           fullWidth
           sx={{ marginBottom: 2 }}
+          value={formData.address} // Bind state to the input
+          onChange={handleChange} // Handle input change
         />
 
         <Button
@@ -80,7 +151,7 @@ const UpdateProduct = ({ open, handleClose }) => {
           variant="contained"
           fullWidth
         >
-          Add Product
+          Update Product
         </Button>
       </Box>
     </Modal>

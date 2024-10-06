@@ -1,13 +1,13 @@
 import React from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Question from "./Question";
 import getQuestions from "../Functions/getQuestions";
 const QuestionWall = ({ search, department, trimester, examType, year }) => {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: [
-      "getquestions",
+      "getquestions1",
       search.value,
       department,
       year,
@@ -25,7 +25,8 @@ const QuestionWall = ({ search, department, trimester, examType, year }) => {
     },
     enabled: true,
   });
-
+  console.log(error);
+  console.log(data);
   return (
     <Box
       padding={6}
@@ -36,10 +37,15 @@ const QuestionWall = ({ search, department, trimester, examType, year }) => {
       gap={2}
       border="2px solid #EBEBEB"
     >
-      {data &&
-        data.map((item, index) => {
+      {data ? (
+        data?.map((item, index) => {
           return <Question key={index} {...item} />;
-        })}
+        })
+      ) : (
+        <Typography variant="h5" textAlign="center">
+          No Question Found
+        </Typography>
+      )}
     </Box>
   );
 };
